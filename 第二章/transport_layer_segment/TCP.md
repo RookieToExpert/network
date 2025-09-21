@@ -85,3 +85,34 @@
 > 整体过程：服务端**LISTEN**，客户端发出 SYN此时状态为**SYN SENT**，服务端收到了SYN，也发出了 SYN+ACK此时状态为**SYN RCVD**，最终服务端**ESTABLISHED**。
 
 ![alt text](image-14.png)
+
+#### Congestion control
+> flow control更针对的是一个sender发送太快，congestion control更加针对的是整体用户的发送速度导致的整个link瘫痪或者频繁丢包的情况
+
+- congestion的坏处
+
+![alt text](image-15.png)
+
+- 解决办法：
+    - **End-end congestion control**
+        - 发送方需要自己去“推测”网络拥堵情况，比如是否有丢包或者延迟变大。
+        - AIMD(Additive Increase Multiplicative Decrease) :
+            - 每收到一个 ACK，就小幅度增加拥塞窗口（cwnd）。
+            - 一旦检测到丢包（= 网络拥塞信号），就把 cwnd 乘以一个因子（通常是减半）。
+
+            ![alt text](image-18.png)
+
+        - 具体的实现AIMD的版本有：
+            - Tahoe(loss-based):**cwnd 线性增加**（Additive Increase）。一旦丢包 → **cwnd 直接减为 1**（乘性减少到最小值）。
+            - Reno(loss-based):丢包时不是直接减到 1，而是 **cwnd 减半**，Reno 在 Tahoe 的基础上优化了快速重传/快速恢复。
+            - **CUBIC(loss-based)**:但加性部分不再是线性增加，而是用**三次函数（cubic 函数）**让带宽利用更高，收敛更快，所以 CUBIC = AIMD 的改进版（更平滑、更适合高带宽-长延迟链路）。
+
+                ![alt text](image-20.png)
+        
+        > 早期还有Vegas是通过延迟驱动，通过判断RTT来加速和减速。同样还有现在谷歌用的BBR的模型驱动，通过瓶颈带宽和最小 RTT 的估计值，保持发送速率 ≈ 带宽 × RTT，让管道“刚好填满，不积压”。
+
+    - **Network-assigned congestion control**
+        - 网络设备（路由器）会直接给发送方反馈。
+        - ECN (Explicit Congestion Notification)：TCP/IP 扩展，路由器在 IP 头打一个标志，告诉发送方“不要再发太快”。
+
+        ![alt text](image-17.png)
