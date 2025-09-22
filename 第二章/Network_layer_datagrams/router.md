@@ -36,3 +36,33 @@
         - 内部有一组交叉点（crossbar switch），支持多个输入同时连接到多个输出。支持更高吞吐量，常用于高性能核心路由器。
 
         ![alt text](image-3.png)
+
+- input port queuing
+    - Head-of-the-line(HOL) blocking
+        - 交换机（switch fabric）需要把输入端口的包转发到输出端口，每个输入端口有一个队列（先进先出 FIFO）。
+        - 比如下面底部队列里的 绿色包本来可以发往绿色端口，但它被红色包卡住了，这就是HOL blocking。
+
+        ![alt text](image-6.png)
+    
+- Output port queuing
+    - Drop policy:如果没有足够buffer，应该丢哪个包
+        - Tail Drop（丢新来的）
+        - Random Early Detection (RED)（随机丢）
+        - 优先级丢弃（低优先级先丢）
+
+    - Scheduling discipline:需要有一个schedule机制决定queue中哪个包应该先送
+        - FIFO（先进先出）
+        - Priority Queuing（高优先级先发）
+        - Round Robin Scheduling:
+
+            ![alt text](image-8.png)
+
+            - Weighted Fair Queuing (WFQ，加权公平队列是更常用的RR策略)
+                - 如果下面的权重是w1:w2:w3=3:2:1那么在一个轮次里：
+                    - 红队列可以发 3 个包
+                    - 绿队列发 2 个包
+                    - 蓝队列发 1 个包
+
+            ![alt text](image-9.png)
+    
+    ![alt text](image-7.png)
