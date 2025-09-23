@@ -84,3 +84,15 @@
 ## IPV6 datagrams
 
 ![alt text](image-16.png)
+
+#### tunneling(隧道技术)
+- tunneling是将IPv6包封装在IPv4包中传输的技术
+
+    ![alt text](image-17.png)
+
+- 具体转换过程：
+1. IPv6包从源主机发送到IPv6路由器, IPv6路由器将其转发到目的IPv6路由器
+2. IPv6路由器将IPv6包封装在IPv4包中，并发送到IPv4路由器
+3. IPv4路由器将IPv4包发送到目的IPv4路由器, 目的IPv4路由器将其解封装并转发到目的IPv6路由器
+
+    ![alt text](image-18.png)
